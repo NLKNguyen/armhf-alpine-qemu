@@ -1,0 +1,18 @@
+sudo: required
+
+language: sh
+
+services:
+  - docker
+
+before_install:
+  - export DOCKER_REPO=nlknguyen/armhf-alpine-qemu
+  - export TAG=$(if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi)  
+
+script:
+  - chmod a+x qemu-arm-static
+  - docker build -t $DOCKER_REPO:$TAG .
+
+after_success:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push $DOCKER_REPO:$TAG
